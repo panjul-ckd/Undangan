@@ -1,48 +1,75 @@
 <!doctype html>
-
 <html lang="id">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Undangan Resepsi - Albi & Aul</title>
+
+  <!-- ✅ Open Graph & WhatsApp Preview -->
+  <meta property="og:title" content="Undangan Resepsi - Albi & Aul" />
+  <meta property="og:description" content="Kehadiran dan doa restu Anda merupakan kebahagiaan bagi kami 💕" />
+  <meta property="og:image" content="https://vocal-taffy.netlify.app/cover.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1080" />
+  <meta property="og:image:height" content="1920" />
+  <meta property="og:url" content="https://vocal-taffy.netlify.app/" />
+  <meta property="og:type" content="website" />
+
+  <!-- ✅ Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Undangan Resepsi - Albi & Aul" />
+  <meta name="twitter:description" content="Kehadiran dan doa restu Anda merupakan kebahagiaan bagi kami 💕" />
+  <meta name="twitter:image" content="https://vocal-taffy.netlify.app/cover.jpg" />
+
   <style>
-    html,body{height:100%;margin:0;font-family:'Segoe UI',sans-serif;background:#fff;color:#222}.hero{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;}
-.cover{position:relative;width:100%;max-width:1080px;aspect-ratio:9/16;overflow:hidden;display:flex;align-items:center;justify-content:center;}
-.cover img{width:100%;height:100%;object-fit:contain;background-color:#000;display:block;}
+    html,body{height:100%;margin:0;font-family:'Segoe UI',sans-serif;background:#fff;color:#222}
+    .hero{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;}
+    .cover{position:relative;width:100%;max-width:1080px;aspect-ratio:9/16;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+    .cover img{width:100%;height:100%;object-fit:contain;background-color:#000;display:block;}
+    .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 20px;background:linear-gradient(to top,rgba(0,0,0,0.5),rgba(0,0,0,0.1));text-align:center;}
+    .overlay-text{background:rgba(0,0,0,0.35);padding:16px 24px;border-radius:16px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,0.5);max-width:90%;}
+    .overlay-text .title-main{font-family:'Great Vibes',cursive;font-size:38px;margin:4px 0;}
+    .overlay-text .subtitle{font-size:18px;opacity:0.9;}
+    .overlay-text .date{font-size:15px;opacity:0.8;}
+    .overlay-text .invitee{font-size:15px;margin-top:10px;color:#ffeefc;font-weight:600;}
 
-.overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 20px;background:linear-gradient(to top,rgba(0,0,0,0.5),rgba(0,0,0,0.1));text-align:center;}
+    .countdown{margin-top:20px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+    .countdown .box{background:rgba(255,255,255,0.2);border-radius:10px;padding:6px 10px;color:#fff;min-width:60px;text-align:center;}
+    .countdown .num{font-weight:700;font-size:18px;}
+    .countdown .lbl{font-size:11px;opacity:0.9;}
 
-.overlay-text{background:rgba(0,0,0,0.35);padding:16px 24px;border-radius:16px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,0.5);max-width:90%;}
+    .btn-open{margin-top:24px;background:linear-gradient(90deg,#f7d9ff,#f3f2ff);color:#5a2a4f;border:none;padding:14px 24px;border-radius:999px;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(120,60,110,0.12);}
+    .btn-open:active{transform:translateY(1px)}
 
-.overlay-text .title-main{font-family:'Great Vibes',cursive;font-size:38px;margin:4px 0;}
-.overlay-text .subtitle{font-size:18px;opacity:0.9;}
-.overlay-text .date{font-size:15px;opacity:0.8;}
+    #playerWrap{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:60;opacity:0;pointer-events:none;transition:opacity .8s ease}
+    #playerWrap.show{opacity:1;pointer-events:auto}
+    #player{width:100%;max-width:1080px;aspect-ratio:9/16;overflow:hidden;}
+    video{width:100%;height:100%;object-fit:contain;background:#000;}
 
-.countdown{margin-top:20px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
-.countdown .box{background:rgba(255,255,255,0.2);border-radius:10px;padding:6px 10px;color:#fff;min-width:60px;text-align:center;}
-.countdown .num{font-weight:700;font-size:18px;}
-.countdown .lbl{font-size:11px;opacity:0.9;}
+    #doaSection{display:none;position:fixed;inset:0;z-index:70;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;background:linear-gradient(180deg,#f9f9f4,#f3f3e7,#e8f0e8);background-size:cover;animation:fadeIn 1.2s ease forwards;overflow-y:auto;min-height:100vh;padding:40px 0 160px;box-sizing:border-box;}
+    #doaSection h2{font-family:'Great Vibes',cursive;font-size:40px;color:#44523f;margin:10px 0;animation:fadeUp 1s ease forwards;}
+    #doaSection p{max-width:90%;font-size:16px;line-height:1.6;color:#3b3b3b;margin:8px auto;animation:fadeUp 1.3s ease forwards;}
 
-.btn-open{margin-top:24px;background:linear-gradient(90deg,#f7d9ff,#f3f2ff);color:#5a2a4f;border:none;padding:14px 24px;border-radius:999px;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(120,60,110,0.12);}
-.btn-open:active{transform:translateY(1px)}
+    #rsvpForm{margin-top:20px;display:flex;flex-direction:column;gap:10px;width:80%;max-width:340px;animation:fadeUp 1.6s ease forwards;}
+    #rsvpForm input,#rsvpForm select{padding:12px;border:1px solid #ccc;border-radius:8px;font-size:15px;}
+    #rsvpForm button{background:linear-gradient(90deg,#f7d9ff,#f3f2ff);color:#5a2a4f;border:none;padding:14px;border-radius:999px;font-weight:700;cursor:pointer;box-shadow:0 6px 14px rgba(120,60,110,0.1);}
+    #rsvpForm button:active{transform:translateY(1px)}
 
-#playerWrap{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:60;opacity:0;pointer-events:none;transition:opacity .8s ease}
-#playerWrap.show{opacity:1;pointer-events:auto}
-#player{width:100%;max-width:1080px;aspect-ratio:9/16;overflow:hidden;}
-video{width:100%;height:100%;object-fit:contain;background:#000;}
+    .gift-section{margin-top:30px;padding:20px;background:rgba(255,255,255,0.7);border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,0.08);max-width:340px;width:80%;animation:fadeUp 1.9s ease forwards;}
+    .gift-section h3{font-family:'Great Vibes',cursive;font-size:30px;color:#44523f;margin-bottom:10px;}
+    .gift-item{margin-bottom:12px;text-align:left;}
+    .gift-item strong{display:block;font-size:15px;color:#333;}
+    .copy-btn{background:#dbe7db;border:none;padding:6px 10px;border-radius:8px;font-size:13px;cursor:pointer;margin-top:6px;}
+    .copy-btn:active{transform:translateY(1px)}
 
-#doaSection{display:none;position:fixed;inset:0;z-index:70;align-items:center;justify-content:center;flex-direction:column;text-align:center;background:linear-gradient(180deg,#f9f9f4,#f3f3e7,#e8f0e8);background-size:cover;animation:fadeIn 1.2s ease forwards;}
-#doaSection h2{font-family:'Great Vibes',cursive;font-size:40px;color:#44523f;margin-bottom:10px;}
-#doaSection p{max-width:90%;font-size:16px;line-height:1.6;color:#3b3b3b;margin:8px auto;}
-#rsvpForm{margin-top:20px;display:flex;flex-direction:column;gap:10px;width:80%;max-width:320px;}
-#rsvpForm input,#rsvpForm select{padding:10px;border:1px solid #ccc;border-radius:8px;font-size:15px;}
-#rsvpForm button{background:linear-gradient(90deg,#f7d9ff,#f3f2ff);color:#5a2a4f;border:none;padding:12px;border-radius:999px;font-weight:700;cursor:pointer;box-shadow:0 6px 14px rgba(120,60,110,0.1);}
-#rsvpForm button:active{transform:translateY(1px)}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-
-@media (max-width:600px){.overlay-text .title-main{font-size:32px}.overlay-text .subtitle{font-size:16px}.btn-open{font-size:16px;padding:12px 20px}}
-
+    @media (max-width:600px){
+      .overlay-text .title-main{font-size:32px}
+      .overlay-text .subtitle{font-size:16px}
+      .btn-open{font-size:16px;padding:12px 20px}
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 </head>
@@ -55,6 +82,7 @@ video{width:100%;height:100%;object-fit:contain;background:#000;}
           <div class="subtitle">Undangan Resepsi Pernikahan</div>
           <div class="title-main">Albi &amp; Aul</div>
           <div class="date">15 November 2025</div>
+          <div class="invitee" id="invitee"></div>
         </div>
         <div class="countdown">
           <div class="box"><div class="num" id="days">--</div><div class="lbl">Hari</div></div>
@@ -65,26 +93,51 @@ video{width:100%;height:100%;object-fit:contain;background:#000;}
         <button class="btn-open" id="openBtn">💌 Buka Undangan</button>
       </div>
     </div>
-  </div>  <div id="playerWrap" role="dialog" aria-hidden="true">
+  </div>
+
+  <div id="playerWrap" role="dialog" aria-hidden="true">
     <div id="player">
       <video id="mainVideo" src="Video.mp4" controls playsinline webkit-playsinline></video>
     </div>
-  </div>  <section id="doaSection">
+  </div>
+
+  <section id="doaSection">
     <h2>Ucapan &amp; Doa</h2>
     <p>“Semoga Allah SWT menjadikan pernikahan ini sebagai pernikahan yang penuh berkah, sakinah, mawaddah, dan rahmah. Semoga cinta yang tumbuh hari ini kekal hingga ke surga-Nya.”</p>
-    <p>💕 Terima kasih atas doa &amp; restu Anda.</p><form id="rsvpForm">
-  <input type="text" id="nama" placeholder="Nama Anda" required>
-  <select id="status" required>
-    <option value="">Konfirmasi Kehadiran</option>
-    <option value="Hadir">Hadir</option>
-    <option value="Tidak Bisa Hadir">Tidak Bisa Hadir</option>
-  </select>
-  <button type="submit">💌 Kirim Konfirmasi via WhatsApp</button>
-</form>
+    <p>💕 Terima kasih atas doa &amp; restu Anda.</p>
 
-  </section><audio id="bgAudio" src="Musik.mp3" loop></audio>
+    <form id="rsvpForm">
+      <input type="text" id="nama" placeholder="Nama Anda" required>
+      <select id="status" required>
+        <option value="">Konfirmasi Kehadiran</option>
+        <option value="Hadir">Hadir</option>
+        <option value="Tidak Bisa Hadir">Tidak Bisa Hadir</option>
+      </select>
+      <button type="submit">💌 Kirim Konfirmasi via WhatsApp</button>
+    </form>
+
+    <div class="gift-section">
+      <h3>💝 Kado Digital</h3>
+      <div class="gift-item">
+        <strong>Bank Mandiri</strong>
+        <div>a.n. Albi Malik Alnur</div>
+        <div>No. Rekening: <span id="mandiri">1210007752169</span></div>
+        <button class="copy-btn" onclick="copyText('mandiri')">📋 Salin Nomor Rekening</button>
+      </div>
+      <div class="gift-item">
+        <strong>DANA</strong>
+        <div>a.n. Aulia</div>
+        <div>No.: <span id="dana">085694968263</span></div>
+        <button class="copy-btn" onclick="copyText('dana')">📋 Salin Nomor</button>
+      </div>
+      <p style="font-size:14px;color:#555;margin-top:10px;">Doa dan restu Anda sudah merupakan hadiah terindah bagi kami 💕</p>
+    </div>
+  </section>
+
+  <audio id="bgAudio" src="Musik.mp3" loop></audio>
 
   <script>
+    // Countdown
     (function(){
       const eventDate=new Date('2025-11-15T10:00:00');
       function update(){
@@ -100,6 +153,14 @@ video{width:100%;height:100%;object-fit:contain;background:#000;}
       setInterval(update,1000);update();
     })();
 
+    // Ambil nama dari URL
+    const params=new URLSearchParams(window.location.search);
+    const namaTamu=params.get('to');
+    if(namaTamu){
+      document.getElementById('invitee').textContent=`Kepada Yth: ${decodeURIComponent(namaTamu)}`;
+    }
+
+    // Tombol & player
     const openBtn=document.getElementById('openBtn');
     const playerWrap=document.getElementById('playerWrap');
     const video=document.getElementById('mainVideo');
@@ -119,8 +180,10 @@ video{width:100%;height:100%;object-fit:contain;background:#000;}
     video.addEventListener('ended',()=>{
       playerWrap.classList.remove('show');
       doaSection.style.display='flex';
+      doaSection.scrollTo({top:0,behavior:'smooth'});
     });
 
+    // Form WhatsApp
     const form=document.getElementById('rsvpForm');
     form.addEventListener('submit',function(e){
       e.preventDefault();
@@ -132,14 +195,12 @@ video{width:100%;height:100%;object-fit:contain;background:#000;}
       window.open(waUrl,'_blank');
     });
 
-    playerWrap.addEventListener('click',e=>{if(e.target===playerWrap){closePlayer();}});
-    document.addEventListener('keydown',e=>{if(e.key==='Escape')closePlayer();});
-
-    function closePlayer(){
-      bgAudio.pause();bgAudio.currentTime=0;video.pause();
-      playerWrap.classList.remove('show');hero.style.display='';setTimeout(()=>hero.style.opacity='1',20);
+    function copyText(id){
+      const text=document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(()=>{
+        alert('Nomor berhasil disalin: '+text);
+      });
     }
-
-    video.addEventListener('play',()=>{if(bgAudio.paused){bgAudio.play().catch(()=>{});}});
-  </script></body>
+  </script>
+</body>
 </html>
