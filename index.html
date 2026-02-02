@@ -3,175 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Foto Pro - Preview A4</title>
+    <title>Studio Foto Pro AI - PDF & Image Download</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@latest/dist/bundle.js"></script>
     <style>
-        :root { --a4-width: 600px; --a4-ratio: 1.414; }
-        body { font-family: 'Segoe UI', sans-serif; background: #e9ecef; margin: 0; padding: 20px; display: flex; gap: 20px; }
-        
-        /* Panel Kontrol (Kiri) */
-        .sidebar { width: 350px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); height: fit-content; }
-        
-        /* Area Preview Kertas (Kanan) */
+        :root { --a4-width: 500px; --a4-ratio: 1.414; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; display: flex; gap: 20px; }
+        .sidebar { width: 420px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); height: 92vh; overflow-y: auto; }
         .main-content { flex: 1; display: flex; flex-direction: column; align-items: center; }
         .paper-a4 { 
-            width: var(--a4-width); 
-            height: calc(var(--a4-width) * var(--a4-ratio)); 
-            background: white; 
-            box-shadow: 0 0 20px rgba(0,0,0,0.2); 
-            position: relative; 
-            padding: 20px; /* Simulasi Margin Kertas */
-            box-sizing: border-box;
-            overflow: hidden;
+            width: var(--a4-width); height: calc(var(--a4-width) * var(--a4-ratio)); 
+            background: white; box-shadow: 0 0 20px rgba(0,0,0,0.15); position: relative; 
+            padding: 15px; box-sizing: border-box; overflow: hidden; border: 1px solid #ddd;
         }
-
-        .controls { display: flex; flex-direction: column; gap: 15px; }
+        .photo-item { 
+            display: flex; flex-direction: column; gap: 8px; background: #f9f9f9; 
+            padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee;
+        }
+        .photo-item img { width: 80px; height: 100px; object-fit: cover; border-radius: 4px; background: #eee; border: 1px solid #ddd; }
+        .bg-options { display: flex; gap: 5px; margin-top: 5px; }
+        .bg-btn { flex: 1; padding: 5px; border: 1px solid #ccc; cursor: pointer; font-size: 10px; border-radius: 4px; font-weight: bold; }
+        .bg-red { background: #ff0000; color: white; }
+        .bg-blue { background: #0000ff; color: white; }
+        .bg-orig { background: #fff; }
+        .btn-download-single { background: #6f42c1; color: white; border: none; padding: 5px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-top: 5px; }
+        .preview-photo { position: absolute; background-size: cover; background-position: center; border: 0.1px solid #ccc; }
         .btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
-        .btn-print { background: #28a745; color: white; }
-        .btn-clear { background: #dc3545; color: white; }
-        
-        /* Styling Foto di dalam Kertas */
-        .preview-photo {
-            position: absolute;
-            outline: 1px solid #eee;
-            background-size: cover;
-            background-position: center;
-        }
-
-        h2 { margin-top: 0; color: #1a73e8; border-bottom: 2px solid #eee; pb: 10px; }
-        label { font-size: 14px; font-weight: bold; color: #555; }
-        select, input { padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+        .btn-print { background: #007bff; color: white; }
+        #loading { display: none; color: #f39c12; font-weight: bold; font-size: 13px; text-align: center; padding: 10px; border: 1px dashed #f39c12; border-radius: 8px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <h2>⚙️ Pengaturan</h2>
-    <div class="controls">
-        <label>1. Pilih Ukuran:</label>
-        <select id="size" onchange="updatePreview()">
-            <optgroup label="Pas Foto">
-                <option value="2x3">2 x 3 cm</option>
-                <option value="3x4" selected>3 x 4 cm</option>
-                <option value="4x6">4 x 6 cm</option>
-            </optgroup>
-            <optgroup label="Ukuran Besar">
-                <option value="3R">3R (8.9x12.7 cm)</option>
-                <option value="4R">4R (10.2x15.2 cm)</option>
-                <option value="8R">8R (20.3x25.4 cm)</option>
-            </optgroup>
-        </select>
+    <h2>📸 Studio Pro AI</h2>
+    
+    <label>Pilih Ukuran:</label>
+    <select id="size" onchange="updatePreview()" style="margin-bottom: 15px; width: 100%; padding: 10px; border-radius: 6px;">
+        <optgroup label="Pas Foto">
+            <option value="2x3">2 x 3 cm</option>
+            <option value="3x4" selected>3 x 4 cm</option>
+            <option value="4x6">4 x 6 cm</option>
+        </optgroup>
+        <optgroup label="Ukuran Besar">
+            <option value="3R">3R (8.9x12.7 cm)</option>
+            <option value="4R">4R (10.2x15.2 cm)</option>
+            <option value="8R">8R (20.3x25.4 cm)</option>
+        </optgroup>
+    </select>
 
-        <label>2. Upload Foto:</label>
-        <input type="file" id="upload" accept="image/*" multiple onchange="handleUpload(event)">
-        
-        <button class="btn btn-print" onclick="generatePDF()">📥 Download PDF (A4)</button>
-        <button class="btn btn-clear" onclick="clearAll()">🗑️ Hapus Semua</button>
-    </div>
-    <p style="font-size: 12px; color: #888; margin-top: 20px;">* Foto akan disusun otomatis memenuhi kertas A4.</p>
+    <label>Upload Foto:</label>
+    <input type="file" id="upload" accept="image/*" multiple onchange="handleUpload(event)" style="margin-bottom: 20px; width: 100%;">
+    
+    <div id="loading">⏳ AI sedang memproses background...</div>
+    <div id="photoListContainer"></div>
+
+    <button class="btn btn-print" onclick="generatePDF()">📥 Download PDF (Cetak A4)</button>
+    <p style="font-size: 11px; color: #777; text-align: center;">Gunakan PDF untuk hasil cetak ukuran presisi.</p>
 </div>
 
 <div class="main-content">
-    <h3 style="margin-top:0">Tampilan Sebelum Dicetak (A4)</h3>
+    <h3>Preview Tata Letak A4</h3>
     <div id="paper" class="paper-a4"></div>
 </div>
 
 <canvas id="tempCanvas" style="display:none;"></canvas>
 
 <script>
-    let photoList = [];
-    const sizes = {
+    let photos = [];
+    const sizes = { 
         '2x3': {w: 21, h: 30}, '3x4': {w: 28, h: 38}, '4x6': {w: 38, h: 56},
-        '3R':  {w: 89, h: 127}, '4R':  {w: 102, h: 152}, '8R':  {w: 203, h: 254}
+        '3R':  {w: 89, h: 127}, '4R': {w: 102, h: 152}, '8R': {w: 203, h: 254}
     };
 
-    function handleUpload(event) {
+    async function handleUpload(event) {
         const files = event.target.files;
+        const loader = document.getElementById('loading');
         for (let file of files) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                photoList.push(e.target.result);
-                updatePreview();
-            };
-            reader.readAsDataURL(file);
+            loader.style.display = 'block';
+            const originalSrc = await fileToBox64(file);
+            try {
+                const blob = await imglyRemoveBackground(file);
+                const noBgSrc = URL.createObjectURL(blob);
+                photos.push({ original: originalSrc, noBg: noBgSrc, current: originalSrc, qty: 1 });
+            } catch (e) {
+                photos.push({ original: originalSrc, current: originalSrc, qty: 1 });
+            }
+            loader.style.display = 'none';
+            renderPhotoList();
+            updatePreview();
         }
     }
+
+    function fileToBox64(file) {
+        return new Promise(res => {
+            const reader = new FileReader();
+            reader.onload = e => res(e.target.result);
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function renderPhotoList() {
+        const container = document.getElementById('photoListContainer');
+        container.innerHTML = '';
+        photos.forEach((photo, index) => {
+            const div = document.createElement('div');
+            div.className = 'photo-item';
+            div.innerHTML = `
+                <div style="display:flex; gap:12px;">
+                    <div style="display:flex; flex-direction:column;">
+                        <img src="${photo.current}">
+                        <button class="btn-download-single" onclick="downloadSingle(${index})">💾 Download PNG</button>
+                    </div>
+                    <div style="flex:1">
+                        <label style="font-size:12px; font-weight:bold;">Jumlah Cetak:</label>
+                        <input type="number" value="${photo.qty}" min="1" onchange="updateQty(${index}, this.value)" style="width:50px; padding:3px;">
+                        <div style="margin-top:10px; font-size:11px; font-weight:bold;">Ganti Background:</div>
+                        <div class="bg-options">
+                            <button class="bg-btn bg-orig" onclick="changeBg(${index}, 'original')">Asli</button>
+                            <button class="bg-btn bg-red" onclick="changeBg(${index}, '#ff0000')">Merah</button>
+                            <button class="bg-btn bg-blue" onclick="changeBg(${index}, '#0000ff')">Biru</button>
+                        </div>
+                        <button onclick="removePhoto(${index})" style="margin-top:10px; color:red; border:none; background:none; cursor:pointer; font-size:11px;">✕ Hapus Foto</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    async function changeBg(index, color) {
+        const photo = photos[index];
+        const selectedSize = sizes[document.getElementById('size').value];
+        const canvas = document.getElementById('tempCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (color === 'original') {
+            photo.current = photo.original;
+        } else {
+            const img = new Image();
+            img.src = photo.noBg;
+            await new Promise(r => img.onload = r);
+            canvas.width = (selectedSize.w / 10) * 118; canvas.height = (selectedSize.h / 10) * 118;
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const scale = Math.max(canvas.width/img.width, canvas.height/img.height);
+            const x = (canvas.width/2)-(img.width/2)*scale;
+            const y = (canvas.height/2)-(img.height/2)*scale;
+            ctx.drawImage(img, x, y, img.width*scale, img.height*scale);
+            photo.current = canvas.toDataURL('image/png');
+        }
+        renderPhotoList();
+        updatePreview();
+    }
+
+    function downloadSingle(index) {
+        const link = document.createElement('a');
+        link.download = `foto-studio-${index+1}.png`;
+        link.href = photos[index].current;
+        link.click();
+    }
+
+    function removePhoto(index) { photos.splice(index, 1); renderPhotoList(); updatePreview(); }
+    function updateQty(index, val) { photos[index].qty = parseInt(val) || 1; updatePreview(); }
 
     function updatePreview() {
         const paper = document.getElementById('paper');
-        paper.innerHTML = ''; // Reset kertas
-        
+        paper.innerHTML = '';
         const selectedSize = sizes[document.getElementById('size').value];
-        const containerWidth = paper.offsetWidth - 40; // Kurangi padding
-        const scaleFactor = containerWidth / 210; // Rasio mm ke pixel preview
+        const scaleFactor = (paper.offsetWidth - 30) / 210; 
+        let curX = 15; let curY = 15;
 
-        let curX = 20; // Mulai dari padding kertas
-        let curY = 20;
-        const spacing = 5 * scaleFactor;
-
-        photoList.forEach((src) => {
-            const wPx = selectedSize.w * scaleFactor;
-            const hPx = selectedSize.h * scaleFactor;
-
-            if (curX + wPx > paper.offsetWidth - 20) {
-                curX = 20;
-                curY += hPx + spacing;
+        photos.forEach(photo => {
+            for(let i = 0; i < photo.qty; i++) {
+                const wPx = selectedSize.w * scaleFactor;
+                const hPx = selectedSize.h * scaleFactor;
+                if (curX + wPx > paper.offsetWidth - 15) { curX = 15; curY += hPx + 4; }
+                if (curY + hPx > paper.offsetHeight - 15) break; 
+                const imgDiv = document.createElement('div');
+                imgDiv.className = 'preview-photo';
+                Object.assign(imgDiv.style, { width: wPx+'px', height: hPx+'px', left: curX+'px', top: curY+'px', backgroundImage: `url(${photo.current})` });
+                paper.appendChild(imgDiv);
+                curX += wPx + 4;
             }
-
-            const imgDiv = document.createElement('div');
-            imgDiv.className = 'preview-photo';
-            imgDiv.style.width = wPx + 'px';
-            imgDiv.style.height = hPx + 'px';
-            imgDiv.style.left = curX + 'px';
-            imgDiv.style.top = curY + 'px';
-            imgDiv.style.backgroundImage = `url(${src})`;
-            
-            paper.appendChild(imgDiv);
-            curX += wPx + spacing;
         });
-    }
-
-    function clearAll() {
-        photoList = [];
-        updatePreview();
-        document.getElementById('upload').value = '';
     }
 
     async function generatePDF() {
-        if (photoList.length === 0) return alert("Upload foto dulu!");
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
         const selectedSize = sizes[document.getElementById('size').value];
-        
         let curX = 10; let curY = 10;
-        for (let photo of photoList) {
-            const img = await createCroppedImg(photo, selectedSize.w, selectedSize.h);
-            if (curX + selectedSize.w > 200) { curX = 10; curY += selectedSize.h + 5; }
-            if (curY + selectedSize.h > 280) { pdf.addPage(); curX = 10; curY = 10; }
-            pdf.addImage(img, 'JPEG', curX, curY, selectedSize.w, selectedSize.h);
-            curX += selectedSize.w + 5;
+        for (let photo of photos) {
+            for (let i = 0; i < photo.qty; i++) {
+                if (curX + selectedSize.w > 200) { curX = 10; curY += selectedSize.h + 4; }
+                if (curY + selectedSize.h > 285) { pdf.addPage(); curX = 10; curY = 10; }
+                pdf.addImage(photo.current, 'PNG', curX, curY, selectedSize.w, selectedSize.h);
+                curX += selectedSize.w + 4;
+            }
         }
-        pdf.save("hasil-cetak.pdf");
-    }
-
-    function createCroppedImg(base64, tw, th) {
-        return new Promise((resolve) => {
-            const canvas = document.getElementById('tempCanvas');
-            const ctx = canvas.getContext('2d');
-            const img = new Image();
-            img.onload = () => {
-                canvas.width = (tw / 10) * 118; canvas.height = (th / 10) * 118;
-                const scale = Math.max(canvas.width/img.width, canvas.height/img.height);
-                const x = (canvas.width/2)-(img.width/2)*scale;
-                const y = (canvas.height/2)-(img.height/2)*scale;
-                ctx.fillStyle = "white"; ctx.fillRect(0,0,canvas.width,canvas.height);
-                ctx.drawImage(img, x, y, img.width*scale, img.height*scale);
-                resolve(canvas.toDataURL('image/jpeg', 0.9));
-            };
-            img.src = base64;
-        });
+        pdf.save("cetak-foto-studio-A4.pdf");
     }
 </script>
-
 </body>
 </html>
