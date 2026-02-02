@@ -1,206 +1,177 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Undangan Resepsi - Albi & Aul</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Foto Pro - Preview A4</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root { --a4-width: 600px; --a4-ratio: 1.414; }
+        body { font-family: 'Segoe UI', sans-serif; background: #e9ecef; margin: 0; padding: 20px; display: flex; gap: 20px; }
+        
+        /* Panel Kontrol (Kiri) */
+        .sidebar { width: 350px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); height: fit-content; }
+        
+        /* Area Preview Kertas (Kanan) */
+        .main-content { flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .paper-a4 { 
+            width: var(--a4-width); 
+            height: calc(var(--a4-width) * var(--a4-ratio)); 
+            background: white; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.2); 
+            position: relative; 
+            padding: 20px; /* Simulasi Margin Kertas */
+            box-sizing: border-box;
+            overflow: hidden;
+        }
 
-  <!-- ✅ Open Graph & WhatsApp Preview -->
-  <meta property="og:title" content="Undangan Resepsi - Albi & Aul" />
-  <meta property="og:description" content="Kehadiran dan doa restu Anda merupakan kebahagiaan bagi kami 💕" />
-  <meta property="og:image" content="https://vocal-taffy.netlify.app/cover.jpg" />
-  <meta property="og:image:type" content="image/jpeg" />
-  <meta property="og:image:width" content="1080" />
-  <meta property="og:image:height" content="1920" />
-  <meta property="og:url" content="https://vocal-taffy.netlify.app/" />
-  <meta property="og:type" content="website" />
+        .controls { display: flex; flex-direction: column; gap: 15px; }
+        .btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
+        .btn-print { background: #28a745; color: white; }
+        .btn-clear { background: #dc3545; color: white; }
+        
+        /* Styling Foto di dalam Kertas */
+        .preview-photo {
+            position: absolute;
+            outline: 1px solid #eee;
+            background-size: cover;
+            background-position: center;
+        }
 
-  <!-- ✅ Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Undangan Resepsi - Albi & Aul" />
-  <meta name="twitter:description" content="Kehadiran dan doa restu Anda merupakan kebahagiaan bagi kami 💕" />
-  <meta name="twitter:image" content="https://vocal-taffy.netlify.app/cover.jpg" />
-
-  <style>
-    html,body{height:100%;margin:0;font-family:'Segoe UI',sans-serif;background:#fff;color:#222}
-    .hero{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;}
-    .cover{position:relative;width:100%;max-width:1080px;aspect-ratio:9/16;overflow:hidden;display:flex;align-items:center;justify-content:center;}
-    .cover img{width:100%;height:100%;object-fit:contain;background-color:#000;display:block;}
-    .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 20px;background:linear-gradient(to top,rgba(0,0,0,0.5),rgba(0,0,0,0.1));text-align:center;}
-    .overlay-text{background:rgba(0,0,0,0.35);padding:16px 24px;border-radius:16px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,0.5);max-width:90%;}
-    .overlay-text .title-main{font-family:'Great Vibes',cursive;font-size:38px;margin:4px 0;}
-    .overlay-text .subtitle{font-size:18px;opacity:0.9;}
-    .overlay-text .date{font-size:15px;opacity:0.8;}
-    .overlay-text .invitee{font-size:15px;margin-top:10px;color:#ffeefc;font-weight:600;}
-
-    .countdown{margin-top:20px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
-    .countdown .box{background:rgba(255,255,255,0.2);border-radius:10px;padding:6px 10px;color:#fff;min-width:60px;text-align:center;}
-    .countdown .num{font-weight:700;font-size:18px;}
-    .countdown .lbl{font-size:11px;opacity:0.9;}
-
-    .btn-open{margin-top:24px;background:linear-gradient(90deg,#f7d9ff,#f3f2ff);color:#5a2a4f;border:none;padding:14px 24px;border-radius:999px;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(120,60,110,0.12);}
-    .btn-open:active{transform:translateY(1px)}
-
-    #playerWrap{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:60;opacity:0;pointer-events:none;transition:opacity .8s ease}
-    #playerWrap.show{opacity:1;pointer-events:auto}
-    #player{width:100%;max-width:1080px;aspect-ratio:9/16;overflow:hidden;}
-    video{width:100%;height:100%;object-fit:contain;background:#000;}
-
-    #doaSection{display:none;position:fixed;inset:0;z-index:70;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;background:linear-gradient(180deg,#f9f9f4,#f3f3e7,#e8f0e8);background-size:cover;animation:fadeIn 1.2s ease forwards;overflow-y:auto;min-height:100vh;padding:40px 0 160px;box-sizing:border-box;}
-    #doaSection h2{font-family:'Great Vibes',cursive;font-size:40px;color:#44523f;margin:10px 0;animation:fadeUp 1s ease forwards;}
-    #doaSection p{max-width:90%;font-size:16px;line-height:1.6;color:#3b3b3b;margin:8px auto;animation:fadeUp 1.3s ease forwards;}
-
-    #rsvpForm{margin-top:20px;display:flex;flex-direction:column;gap:10px;width:80%;max-width:340px;animation:fadeUp 1.6s ease forwards;}
-    #rsvpForm input,#rsvpForm select{padding:12px;border:1px solid #ccc;border-radius:8px;font-size:15px;}
-    #rsvpForm button{background:linear-gradient(90deg,#f7d9ff,#f3f2ff);color:#5a2a4f;border:none;padding:14px;border-radius:999px;font-weight:700;cursor:pointer;box-shadow:0 6px 14px rgba(120,60,110,0.1);}
-    #rsvpForm button:active{transform:translateY(1px)}
-
-    .gift-section{margin-top:30px;padding:20px;background:rgba(255,255,255,0.7);border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,0.08);max-width:340px;width:80%;animation:fadeUp 1.9s ease forwards;}
-    .gift-section h3{font-family:'Great Vibes',cursive;font-size:30px;color:#44523f;margin-bottom:10px;}
-    .gift-item{margin-bottom:12px;text-align:left;}
-    .gift-item strong{display:block;font-size:15px;color:#333;}
-    .copy-btn{background:#dbe7db;border:none;padding:6px 10px;border-radius:8px;font-size:13px;cursor:pointer;margin-top:6px;}
-    .copy-btn:active{transform:translateY(1px)}
-
-    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-
-    @media (max-width:600px){
-      .overlay-text .title-main{font-size:32px}
-      .overlay-text .subtitle{font-size:16px}
-      .btn-open{font-size:16px;padding:12px 20px}
-    }
-  </style>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+        h2 { margin-top: 0; color: #1a73e8; border-bottom: 2px solid #eee; pb: 10px; }
+        label { font-size: 14px; font-weight: bold; color: #555; }
+        select, input { padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+    </style>
 </head>
 <body>
-  <div class="hero" id="hero">
-    <div class="cover">
-      <img id="coverImg" src="cover.jpg" alt="Cover Undangan Albi dan Aul">
-      <div class="overlay">
-        <div class="overlay-text">
-          <div class="subtitle">Undangan Resepsi Pernikahan</div>
-          <div class="title-main">Albi &amp; Aul</div>
-          <div class="date">15 November 2025</div>
-          <div class="invitee" id="invitee"></div>
-        </div>
-        <div class="countdown">
-          <div class="box"><div class="num" id="days">--</div><div class="lbl">Hari</div></div>
-          <div class="box"><div class="num" id="hours">--</div><div class="lbl">Jam</div></div>
-          <div class="box"><div class="num" id="minutes">--</div><div class="lbl">Menit</div></div>
-          <div class="box"><div class="num" id="seconds">--</div><div class="lbl">Detik</div></div>
-        </div>
-        <button class="btn-open" id="openBtn">💌 Buka Undangan</button>
-      </div>
+
+<div class="sidebar">
+    <h2>⚙️ Pengaturan</h2>
+    <div class="controls">
+        <label>1. Pilih Ukuran:</label>
+        <select id="size" onchange="updatePreview()">
+            <optgroup label="Pas Foto">
+                <option value="2x3">2 x 3 cm</option>
+                <option value="3x4" selected>3 x 4 cm</option>
+                <option value="4x6">4 x 6 cm</option>
+            </optgroup>
+            <optgroup label="Ukuran Besar">
+                <option value="3R">3R (8.9x12.7 cm)</option>
+                <option value="4R">4R (10.2x15.2 cm)</option>
+                <option value="8R">8R (20.3x25.4 cm)</option>
+            </optgroup>
+        </select>
+
+        <label>2. Upload Foto:</label>
+        <input type="file" id="upload" accept="image/*" multiple onchange="handleUpload(event)">
+        
+        <button class="btn btn-print" onclick="generatePDF()">📥 Download PDF (A4)</button>
+        <button class="btn btn-clear" onclick="clearAll()">🗑️ Hapus Semua</button>
     </div>
-  </div>
+    <p style="font-size: 12px; color: #888; margin-top: 20px;">* Foto akan disusun otomatis memenuhi kertas A4.</p>
+</div>
 
-  <div id="playerWrap" role="dialog" aria-hidden="true">
-    <div id="player">
-      <video id="mainVideo" src="Video.mp4" controls playsinline webkit-playsinline></video>
-    </div>
-  </div>
+<div class="main-content">
+    <h3 style="margin-top:0">Tampilan Sebelum Dicetak (A4)</h3>
+    <div id="paper" class="paper-a4"></div>
+</div>
 
-  <section id="doaSection">
-    <h2>Ucapan &amp; Doa</h2>
-    <p>“Semoga Allah SWT menjadikan pernikahan ini sebagai pernikahan yang penuh berkah, sakinah, mawaddah, dan rahmah. Semoga cinta yang tumbuh hari ini kekal hingga ke surga-Nya.”</p>
-    <p>💕 Terima kasih atas doa &amp; restu Anda.</p>
+<canvas id="tempCanvas" style="display:none;"></canvas>
 
-    <form id="rsvpForm">
-      <input type="text" id="nama" placeholder="Nama Anda" required>
-      <select id="status" required>
-        <option value="">Konfirmasi Kehadiran</option>
-        <option value="Hadir">Hadir</option>
-        <option value="Tidak Bisa Hadir">Tidak Bisa Hadir</option>
-      </select>
-      <button type="submit">💌 Kirim Konfirmasi via WhatsApp</button>
-    </form>
-
-    <div class="gift-section">
-      <h3>💝 Kado Digital</h3>
-      <div class="gift-item">
-        <strong>Bank Mandiri</strong>
-        <div>a.n. Albi Malik Alnur</div>
-        <div>No. Rekening: <span id="mandiri">1210007752169</span></div>
-        <button class="copy-btn" onclick="copyText('mandiri')">📋 Salin Nomor Rekening</button>
-      </div>
-      <div class="gift-item">
-        <strong>DANA</strong>
-        <div>a.n. Aulia</div>
-        <div>No.: <span id="dana">085694968263</span></div>
-        <button class="copy-btn" onclick="copyText('dana')">📋 Salin Nomor</button>
-      </div>
-      <p style="font-size:14px;color:#555;margin-top:10px;">Doa dan restu Anda sudah merupakan hadiah terindah bagi kami 💕</p>
-    </div>
-  </section>
-
-  <audio id="bgAudio" src="Musik.mp3" loop></audio>
-
-  <script>
-    // Countdown
-    (function(){
-      const eventDate=new Date('2025-11-15T10:00:00');
-      function update(){
-        const now=new Date();
-        let diff=eventDate-now;
-        if(diff<0)diff=0;
-        const d=Math.floor(diff/86400000),h=Math.floor(diff/3600000)%24,m=Math.floor(diff/60000)%60,s=Math.floor(diff/1000)%60;
-        days.textContent=d.toString().padStart(2,'0');
-        hours.textContent=h.toString().padStart(2,'0');
-        minutes.textContent=m.toString().padStart(2,'0');
-        seconds.textContent=s.toString().padStart(2,'0');
-      }
-      setInterval(update,1000);update();
-    })();
-
-    // Ambil nama dari URL
-    const params=new URLSearchParams(window.location.search);
-    const namaTamu=params.get('to');
-    if(namaTamu){
-      document.getElementById('invitee').textContent=`Kepada Yth: ${decodeURIComponent(namaTamu)}`;
-    }
-
-    // Tombol & player
-    const openBtn=document.getElementById('openBtn');
-    const playerWrap=document.getElementById('playerWrap');
-    const video=document.getElementById('mainVideo');
-    const bgAudio=document.getElementById('bgAudio');
-    const hero=document.getElementById('hero');
-    const doaSection=document.getElementById('doaSection');
-
-    openBtn.onclick=async()=>{
-      playerWrap.classList.add('show');
-      try{await bgAudio.play();}catch(e){console.log(e)}
-      try{await video.play();}catch(e){console.log(e)}
-      hero.style.transition='opacity .9s ease';
-      hero.style.opacity='0';
-      setTimeout(()=>hero.style.display='none',900);
+<script>
+    let photoList = [];
+    const sizes = {
+        '2x3': {w: 21, h: 30}, '3x4': {w: 28, h: 38}, '4x6': {w: 38, h: 56},
+        '3R':  {w: 89, h: 127}, '4R':  {w: 102, h: 152}, '8R':  {w: 203, h: 254}
     };
 
-    video.addEventListener('ended',()=>{
-      playerWrap.classList.remove('show');
-      doaSection.style.display='flex';
-      doaSection.scrollTo({top:0,behavior:'smooth'});
-    });
-
-    // Form WhatsApp
-    const form=document.getElementById('rsvpForm');
-    form.addEventListener('submit',function(e){
-      e.preventDefault();
-      const nama=document.getElementById('nama').value.trim();
-      const status=document.getElementById('status').value;
-      if(!nama||!status)return alert('Harap isi nama dan status kehadiran.');
-      const msg=`Halo, saya ${nama}.\nStatus kehadiran: ${status}.`;
-      const waUrl=`https://wa.me/6285716012929?text=${encodeURIComponent(msg)}`;
-      window.open(waUrl,'_blank');
-    });
-
-    function copyText(id){
-      const text=document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text).then(()=>{
-        alert('Nomor berhasil disalin: '+text);
-      });
+    function handleUpload(event) {
+        const files = event.target.files;
+        for (let file of files) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                photoList.push(e.target.result);
+                updatePreview();
+            };
+            reader.readAsDataURL(file);
+        }
     }
-  </script>
+
+    function updatePreview() {
+        const paper = document.getElementById('paper');
+        paper.innerHTML = ''; // Reset kertas
+        
+        const selectedSize = sizes[document.getElementById('size').value];
+        const containerWidth = paper.offsetWidth - 40; // Kurangi padding
+        const scaleFactor = containerWidth / 210; // Rasio mm ke pixel preview
+
+        let curX = 20; // Mulai dari padding kertas
+        let curY = 20;
+        const spacing = 5 * scaleFactor;
+
+        photoList.forEach((src) => {
+            const wPx = selectedSize.w * scaleFactor;
+            const hPx = selectedSize.h * scaleFactor;
+
+            if (curX + wPx > paper.offsetWidth - 20) {
+                curX = 20;
+                curY += hPx + spacing;
+            }
+
+            const imgDiv = document.createElement('div');
+            imgDiv.className = 'preview-photo';
+            imgDiv.style.width = wPx + 'px';
+            imgDiv.style.height = hPx + 'px';
+            imgDiv.style.left = curX + 'px';
+            imgDiv.style.top = curY + 'px';
+            imgDiv.style.backgroundImage = `url(${src})`;
+            
+            paper.appendChild(imgDiv);
+            curX += wPx + spacing;
+        });
+    }
+
+    function clearAll() {
+        photoList = [];
+        updatePreview();
+        document.getElementById('upload').value = '';
+    }
+
+    async function generatePDF() {
+        if (photoList.length === 0) return alert("Upload foto dulu!");
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const selectedSize = sizes[document.getElementById('size').value];
+        
+        let curX = 10; let curY = 10;
+        for (let photo of photoList) {
+            const img = await createCroppedImg(photo, selectedSize.w, selectedSize.h);
+            if (curX + selectedSize.w > 200) { curX = 10; curY += selectedSize.h + 5; }
+            if (curY + selectedSize.h > 280) { pdf.addPage(); curX = 10; curY = 10; }
+            pdf.addImage(img, 'JPEG', curX, curY, selectedSize.w, selectedSize.h);
+            curX += selectedSize.w + 5;
+        }
+        pdf.save("hasil-cetak.pdf");
+    }
+
+    function createCroppedImg(base64, tw, th) {
+        return new Promise((resolve) => {
+            const canvas = document.getElementById('tempCanvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.onload = () => {
+                canvas.width = (tw / 10) * 118; canvas.height = (th / 10) * 118;
+                const scale = Math.max(canvas.width/img.width, canvas.height/img.height);
+                const x = (canvas.width/2)-(img.width/2)*scale;
+                const y = (canvas.height/2)-(img.height/2)*scale;
+                ctx.fillStyle = "white"; ctx.fillRect(0,0,canvas.width,canvas.height);
+                ctx.drawImage(img, x, y, img.width*scale, img.height*scale);
+                resolve(canvas.toDataURL('image/jpeg', 0.9));
+            };
+            img.src = base64;
+        });
+    }
+</script>
+
 </body>
 </html>
